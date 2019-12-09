@@ -1,0 +1,59 @@
+{
+  "format": 1,
+  "restore": {
+    "C:\\Универ\\5 семестр\\Теория графов\\Мои задачи\\graph_practice\\graph\\graph\\graph.csproj": {}
+  },
+  "projects": {
+    "C:\\Универ\\5 семестр\\Теория графов\\Мои задачи\\graph_practice\\graph\\graph\\graph.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "C:\\Универ\\5 семестр\\Теория графов\\Мои задачи\\graph_practice\\graph\\graph\\graph.csproj",
+        "projectName": "graph",
+        "projectPath": "C:\\Универ\\5 семестр\\Теория графов\\Мои задачи\\graph_practice\\graph\\graph\\graph.csproj",
+        "packagesPath": "C:\\Users\\artyo\\.nuget\\packages\\",
+        "outputPath": "C:\\Универ\\5 семестр\\Теория графов\\Мои задачи\\graph_practice\\graph\\graph\\obj\\",
+        "projectStyle": "PackageReference",
+        "fallbackFolders": [
+          "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
+        ],
+        "configFilePaths": [
+          "C:\\Users\\artyo\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+        ],
+        "originalTargetFrameworks": [
+          "netcoreapp2.1"
+        ],
+        "sources": {
+          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "netcoreapp2.1": {
+            "projectReferences": {}
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        }
+      },
+      "frameworks": {
+        "netcoreapp2.1": {
+          "dependencies": {
+            "Microsoft.NETCore.App": {
+              "target": "Package",
+              "version": "[2.1.0, )",
+              "autoReferenced": true
+            }
+          },
+          "imports": [
+            "net461"
+          ],
+          "assetTargetFallback": true,
+          "warn": true
+        }
+      }
+    }
+  }
+}

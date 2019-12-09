@@ -1,0 +1,6 @@
+Weighted
+Saratov - Moscow:800 Kazan:600
+Moscow - Saratov:800
+Kazan - Saratov:600
+Rostov
+Kirov - Saratov:550 Kazan:700 Moscow:200
