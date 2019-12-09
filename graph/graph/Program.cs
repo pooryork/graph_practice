@@ -85,6 +85,15 @@ namespace Graph
                 Console.Write(" such vertexes do not exist");
             }
             Console.WriteLine();
+            Console.WriteLine();
+            #endregion
+
+            #region task Iб-7
+            Console.WriteLine("Iб-7. Вывести список смежности подграфа данного графа, полученного удалением вершин с чётными номерами.");
+            Console.WriteLine("1: ");
+            graph.Ib7();
+            Console.WriteLine("2: ");
+            graph1.Ib7();
             #endregion
 
         }

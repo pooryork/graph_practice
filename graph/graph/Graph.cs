@@ -15,7 +15,7 @@ namespace Graph
         //2.2) Вес если он есть иначе использовать null!
         private Dictionary<string, Dictionary<string, double?>> graph = new Dictionary<string, Dictionary<string, double?>>();
         //Свойство указывающее взвешенный ли граф
-        public bool IsWeighted { get; }
+        public bool IsWeighted { get; set; }
 
         //Конструктор по умолчанию инициализирует пустой граф
         public Graph() { }
@@ -90,7 +90,7 @@ namespace Graph
                             //если из вершины выходит хотя бы одна дуга
                             if (vertex_info_arr.Length == 2)
                             {
-                                vertex_info_arr = vertex_info_arr[1].Split("  ");
+                                vertex_info_arr = vertex_info_arr[1].Split(" ");
                                 //Словарь для добавления дуг и веса
                                 Dictionary<string, double?> vertex_info_pairs = new Dictionary<string, double?>();
                                 //Добавляем все дуги
@@ -117,7 +117,8 @@ namespace Graph
                 throw new Exception("Файл с таким именем не найден.");
             }
         }
-               
+                       
+        //переопределение метода ToString
         public override string ToString()
         {
             StringBuilder info_graph = new StringBuilder();
@@ -167,8 +168,7 @@ namespace Graph
 
             return info_graph.ToString();
         }
-
-
+        
         //6. Вывести все изолированные вершины орграфа (степени 0).
         public List<string> Ia6()
         {
@@ -238,5 +238,63 @@ namespace Graph
             return vertexes;
         }
 
+        //7. Вывести список смежности подграфа данного графа, полученного удалением вершин с чётными номерами.
+        public void Ib7()
+        {
+            List<string> vertexesToDelete = new List<string>();
+            //удаляем вершину из списка вершин
+            foreach (KeyValuePair<string, Dictionary<string, double?>> item_vertex in graph)
+            {
+                //выясняем какие вершины нужно удалить
+                bool success = Int32.TryParse(item_vertex.Key, out int number);
+                if (success && number % 2 == 0)
+                {
+                    vertexesToDelete.Add(item_vertex.Key);
+                }
+                else if (!success)
+                {
+                    throw new Exception("Некорректная операция! Название вершины не является числом!");
+                }
+            }
+
+            //выясняем какие вершины нужно удалить
+            foreach (var i in vertexesToDelete)
+            {
+                //удалить вершину из списка вершин
+                graph.Remove(i);
+
+            }
+
+            Graph tmp_graph = new Graph();
+            tmp_graph.IsWeighted = IsWeighted;
+            //удалить вершину из списка вершин
+            foreach (KeyValuePair<string, Dictionary<string, double?>> item_vertex in graph)
+            {
+                Dictionary<string, double?> new_vertex = new Dictionary<string, double?>();
+                foreach (KeyValuePair<string, double?> item_edge in item_vertex.Value)
+                {
+                    if (vertexesToDelete.IndexOf(item_edge.Key) == -1)
+                    {
+                        new_vertex.Add(item_edge.Key, item_edge.Value);
+                    }                    
+                }
+                if (new_vertex.Count > 0)
+                {
+                    tmp_graph.Add(item_vertex.Key, new_vertex);
+                }
+                else
+                {
+                    new_vertex.Add("null", null);
+                    tmp_graph.Add(item_vertex.Key, new_vertex);
+                }
+
+            }
+            Console.WriteLine(tmp_graph.ToString());
+        }
+
+        private void Add(string key, Dictionary<string, double?> new_vertex)
+        {
+            graph.Add(key, new_vertex);
+        }
     }
 }
