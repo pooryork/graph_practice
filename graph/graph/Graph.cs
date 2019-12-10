@@ -296,5 +296,80 @@ namespace Graph
         {
             graph.Add(key, new_vertex);
         }
+
+        //16. Найти сильно связные компоненты орграфа.
+        public int II1()
+        {
+            return -1;
+        }
+
+        public List<string> GetListVertex()
+        {
+            return new List<string>(graph.Keys);
+        }
+
+        public Dictionary<string, double?> GetListWeightedEdges(string vertex)
+        {
+            try
+            {
+                return graph[vertex];
+            }
+            catch
+            {
+                throw new Exception("Указанная вершина отсутсвует.");
+            }
+        }
+
+        //30. Вывести длины кратчайших путей от всех вершин до u.
+        public Dictionary<string, double?> Dijkstra(string cur_vertex)
+        {
+            Dictionary<string, double?> distance = new Dictionary<string, double?>();
+            Dictionary<string, string> path = new Dictionary<string, string>();
+
+            foreach (string vertex in GetListVertex())
+            {
+                if (vertex == cur_vertex)
+                {
+                    distance.Add(vertex, 0);
+                }
+                else
+                {
+                    distance.Add(vertex, double.MaxValue);
+                }
+            }
+
+            List<string> not_visited_vertex = GetListVertex();
+
+            while (not_visited_vertex.Count > 0)
+            {
+                var min_value = distance.Where(elem => not_visited_vertex.Contains(elem.Key)).Min(t => t.Value);
+                var min_vertex_distance = distance.Where(elem => not_visited_vertex.Contains(elem.Key)).Where(t => t.Value == min_value).ToList();
+
+                not_visited_vertex.Remove(min_vertex_distance[0].Key);
+
+                foreach (KeyValuePair<string, double?> edge in GetListWeightedEdges(min_vertex_distance[0].Key))
+                {
+                    //Console.WriteLine("edge: " + edge.ToString());
+                    if (edge.Key != "null")
+                    {
+                        if (distance[edge.Key] > distance[min_vertex_distance[0].Key] + edge.Value)
+                        {
+                            distance[edge.Key] = distance[min_vertex_distance[0].Key] + edge.Value;
+                            //Console.WriteLine("edge: " + edge.Value);
+                            if (path.ContainsKey(edge.Key))
+                            {
+                                path[edge.Key] = min_vertex_distance[0].Key;
+                            }
+                            else
+                            {
+                                path.Add(edge.Key, min_vertex_distance[0].Key);
+                            }
+                        }
+                    }
+                }
+            }
+            
+            return distance;
+        }
     }
 }

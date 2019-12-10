@@ -96,6 +96,21 @@ namespace Graph
             graph1.Ib7();
             #endregion
 
+            #region Обход 1
+            //Console.WriteLine("16. Найти сильно связные компоненты орграфа.");
+            #endregion
+
+            #region Алгоритм Дейкстры
+            Console.WriteLine("Алгоритм Дейкстры");
+            graph = new Graph("test.txt");
+            //Console.WriteLine(graph.ToString());
+            Dictionary<string, double?> graph_ways = graph.Dijkstra("4");
+            foreach (KeyValuePair<string, double?> i in graph_ways)
+            {
+                Console.WriteLine(i.ToString());
+            }
+            #endregion
+
         }
 
     }
