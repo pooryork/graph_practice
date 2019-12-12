@@ -12,12 +12,12 @@ namespace Graph
             Graph graph1 = new Graph("test1.txt");
             Graph graph2 = new Graph("test2.txt");
 
-            Console.WriteLine(graph.ToString());
+            /*Console.WriteLine(graph.ToString());
             Console.WriteLine();
             Console.WriteLine(graph1.ToString());
             Console.WriteLine();
             Console.WriteLine(graph2.ToString());
-            Console.WriteLine();
+            Console.WriteLine();*/
             #endregion
 
             #region task Ia-6
@@ -27,20 +27,6 @@ namespace Graph
             if (isolatedVertexes1.Count > 0)
             {
                 foreach (var i in isolatedVertexes1)
-                {
-                    Console.Write(i + " ");
-                }
-            }
-            else
-            {
-                Console.Write("no isolated vertexes");
-            }
-            Console.WriteLine();
-            List<string> isolatedVertexes2 = graph1.Ia6();
-            Console.Write("2: ");
-            if (isolatedVertexes2.Count > 0)
-            {
-                foreach (var i in isolatedVertexes2)
                 {
                     Console.Write(i + " ");
                 }
@@ -93,22 +79,40 @@ namespace Graph
             Console.WriteLine("1: ");
             graph.Ib7();
             Console.WriteLine("2: ");
+            graph = new Graph("test.txt");
+            graph1 = new Graph("test1.txt");
             graph1.Ib7();
+            Console.WriteLine();
+            //Console.WriteLine(graph.ToString());
             #endregion
 
-            #region Обход 1
-            //Console.WriteLine("16. Найти сильно связные компоненты орграфа.");
+            #region Обход 1 (DFS)
+            Console.WriteLine("16. Найти сильно связные компоненты орграфа (DFS)");
+            Dictionary<string, List<string>> ans = graph.stronglyConnectedWithDFS();
+            foreach (var i in ans)
+            {
+                if (i.Value.Count > 0)
+                {
+                    Console.Write(i.Key + " - ");
+                    foreach (var j in i.Value)
+                    {
+                        Console.Write(j.ToString() + " ");
+                    }
+                    Console.WriteLine();
+                }
+            }
+            Console.WriteLine();
             #endregion
 
             #region Алгоритм Дейкстры
-            Console.WriteLine("Алгоритм Дейкстры");
-            graph = new Graph("test.txt");
+            Console.WriteLine("Вывести длины кратчайших путей от всех вершин до u (Алгоритм Дейкстры)");
             //Console.WriteLine(graph.ToString());
             Dictionary<string, double?> graph_ways = graph.Dijkstra("4");
             foreach (KeyValuePair<string, double?> i in graph_ways)
             {
                 Console.WriteLine(i.ToString());
             }
+            Console.WriteLine();
             #endregion
 
         }

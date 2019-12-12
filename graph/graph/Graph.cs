@@ -174,16 +174,31 @@ namespace Graph
         {
             List<string> isolatedVertexes = new List<string>();
 
+            List<string> list = this.GetListVertex();
+
             foreach (KeyValuePair<string, Dictionary<string, double?>> item_vertex in graph)
             {
-                //Добавляем вершину
-                //info_graph.Append(Environment.NewLine + item_vertex.Key + " - ");
-                //Добавлем ребра
-                foreach (KeyValuePair<string, double?> item_edge in item_vertex.Value)
+                if (item_vertex.Value.Count == 1)
                 {
-                    if (item_edge.Key == "null" && item_edge.Value == null)
+                    Dictionary<string, double?> item = item_vertex.Value;
+                    if (item.TryGetValue("null", out double? key))
                     {
-                        isolatedVertexes.Add(item_vertex.Key);
+                            bool noEdges = true;
+                            foreach (KeyValuePair<string, Dictionary<string, double?>> sub_item_vertex in graph)
+                            {                                
+                                foreach (KeyValuePair<string, double?> sub_item_edge in sub_item_vertex.Value)
+                                {
+                                    if (sub_item_edge.Key == item_vertex.Key)
+                                    {
+                                    noEdges = false;
+                                    }
+                                }                    
+                            }
+                            if (noEdges)
+                            {
+                                isolatedVertexes.Add(item_vertex.Key);
+                            }
+                                                
                     }
                 }
             }
@@ -318,6 +333,88 @@ namespace Graph
             {
                 throw new Exception("Указанная вершина отсутсвует.");
             }
+        }
+
+        public List<string> GetListEdges(string vertex)
+        {
+            try
+            {
+                return new List<string>(graph[vertex].Keys);
+            }
+            catch
+            {
+                throw new Exception("Указанная вершина " + vertex + " отсутсвует.");
+            }
+        }
+
+        public List<string> DFS(string vertex)
+        {
+            Stack<string> NoProcessedVertex = new Stack<string>();
+            List<string> ProcessedVertex = new List<string>();
+
+            if (graph.ContainsKey(vertex))
+            {
+                ProcessedVertex.Add(vertex);
+                foreach (string item in GetListEdges(vertex))
+                {
+                    NoProcessedVertex.Push(item);
+                }
+
+                while (NoProcessedVertex.Count > 0)
+                {
+                    string temp_vertex = NoProcessedVertex.Pop();
+                    if (temp_vertex != "null")
+                    {
+                        if (ProcessedVertex.Contains(temp_vertex))
+                        {
+                            continue;
+                        }
+                        ProcessedVertex.Add(temp_vertex);
+                        foreach (string item in GetListEdges(temp_vertex))
+                        {
+                            NoProcessedVertex.Push(item);
+                        }
+                    }
+                }
+
+                return ProcessedVertex;
+            }
+            else
+            {
+                throw new Exception("Указанная вершина отсутсвует в графе.");
+            }
+        }
+
+        public Dictionary<string, List<string>> stronglyConnectedWithDFS()
+        {
+            Dictionary<string, List<string>> dfs_mas = new Dictionary<string, List<string>>();
+
+            foreach (KeyValuePair<string, Dictionary<string, double?>> item_vertex in graph)
+            {
+                dfs_mas.Add(item_vertex.Key, this.DFS(item_vertex.Key));
+            }
+
+            Dictionary<string, List<string>> stronglyConnected = new Dictionary<string, List<string>>();
+
+            foreach (KeyValuePair<string, List<string>> i in dfs_mas)
+            {
+                List<string> tmp = new List<string>();
+                foreach (var j in i.Value)
+                {                    
+                    if (i.Key != j)
+                    {
+                        //Console.WriteLine(i.Key + " - " + j);
+                        //KeyValuePair<string, string> connecetedVertexes = new KeyValuePair<string, string>();
+                        //connecetedVertexes.Key = i.Key;
+
+                        tmp.Add(j);                        
+                    }
+                }
+                stronglyConnected.Add(i.Key, tmp);
+            }
+
+            return stronglyConnected;
+
         }
 
         //30. Вывести длины кратчайших путей от всех вершин до u.
