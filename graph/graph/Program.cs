@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Graph
 {
@@ -12,15 +13,15 @@ namespace Graph
             Graph graph1 = new Graph("test1.txt");
             Graph graph2 = new Graph("test2.txt");
 
-            /*Console.WriteLine(graph.ToString());
+            Console.WriteLine(graph.ToString());
             Console.WriteLine();
-            Console.WriteLine(graph1.ToString());
+            /*Console.WriteLine(graph1.ToString());
             Console.WriteLine();
             Console.WriteLine(graph2.ToString());
             Console.WriteLine();*/
             #endregion
 
-            #region task Ia-6
+            /*#region task Ia-6
             Console.WriteLine("Ia-6. Вывести все изолированные вершины орграфа (степени 0).");
             List<string> isolatedVertexes1 = graph.Ia6();
             Console.Write("1: ");
@@ -84,35 +85,51 @@ namespace Graph
             graph1.Ib7();
             Console.WriteLine();
             //Console.WriteLine(graph.ToString());
-            #endregion
+            #endregion*/
 
             #region Обход 1 (DFS)
             Console.WriteLine("16. Найти сильно связные компоненты орграфа (DFS)");
-            Dictionary<string, List<string>> ans = graph.stronglyConnectedWithDFS();
-            foreach (var i in ans)
-            {
-                if (i.Value.Count > 0)
-                {
-                    Console.Write(i.Key + " - ");
-                    foreach (var j in i.Value)
-                    {
-                        Console.Write(j.ToString() + " ");
-                    }
-                    Console.WriteLine();
-                }
-            }
-            Console.WriteLine();
+            /*graph.stronglyConnectedWithDFS();            
+            Console.WriteLine();*/
             #endregion
 
             #region Алгоритм Дейкстры
-            Console.WriteLine("Вывести длины кратчайших путей от всех вершин до u (Алгоритм Дейкстры)");
-            //Console.WriteLine(graph.ToString());
+            /*Console.WriteLine("Вывести длины кратчайших путей от всех вершин до u (Алгоритм Дейкстры)");
             Dictionary<string, double?> graph_ways = graph.Dijkstra("4");
+            Console.WriteLine("Из вершины 4: ");
             foreach (KeyValuePair<string, double?> i in graph_ways)
             {
                 Console.WriteLine(i.ToString());
             }
+            Console.WriteLine();*/
+            #endregion
+
+            #region Прим
+            Console.WriteLine("Дан взвешенный неориентированный граф из N вершин и M ребер.");
+            Console.WriteLine("Требуется найти в нем каркас минимального веса. Алгоритм Прима");
+            Graph connected_oriented = new Graph("test.txt");
+            //Console.WriteLine(connected_oriented.ToString());
+            Console.WriteLine(connected_oriented.Prim());
             Console.WriteLine();
+            #endregion
+
+            #region IVb
+            Console.WriteLine("Найти радиус графа — минимальный из эксцентриситетов его вершин.");
+            Graph g = new Graph("test.txt");
+            List<double?> max_distance = new List<double?>();
+            foreach (var vertex in g.GetListVertex())
+            {
+                max_distance.Add(g.BellmanFord(vertex).
+                    Where(elem => elem.Value != double.MaxValue).
+                    Max(elem => elem.Value));
+                //Console.WriteLine(vertex);
+                /*foreach (KeyValuePair<string, double?> item in g.BellmanFord(vertex))
+                {
+                    Console.WriteLine(item);
+                }*/
+            }
+            double? radius = max_distance.Min();
+            Console.WriteLine("Радиус: " + radius);
             #endregion
 
         }

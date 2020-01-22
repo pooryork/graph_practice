@@ -6,6 +6,57 @@ using System.Linq;
 
 namespace Graph
 {
+    #region class Edge
+    public class Edge : IComparable<Edge>
+    {
+        private string vertex_from;
+        public string VertexFrom
+        {
+            get
+            {
+                return vertex_from;
+            }
+        }
+        private string vertex_to;
+        public string VertexTo
+        {
+            get
+            {
+                return vertex_to;
+            }
+        }
+        private double? weight;
+        public double? Weight
+        {
+            get
+            {
+                return weight;
+            }
+        }
+
+        public Edge(string vertex_from, string vertex_to, double? weight)
+        {
+            this.vertex_from = vertex_from;
+            this.vertex_to = vertex_to;
+            this.weight = weight;
+        }
+
+        public int CompareTo(Edge edge)
+        {
+            if (this.Weight == edge.Weight)
+                return 0;
+            else if (this.Weight > edge.Weight)
+                return 1;
+            else
+                return -1;
+        }
+
+        public override string ToString()
+        {
+            return String.Format("Ребро из {0} в {1} с весом {2}", VertexFrom, VertexTo, Weight);
+        }
+    }
+    #endregion
     public class Graph
     {
         //Структура:
@@ -117,7 +168,13 @@ namespace Graph
                 throw new Exception("Файл с таким именем не найден.");
             }
         }
-                       
+        //конструктор-копия
+        public Graph(Graph exist_graph)
+        {
+            graph = new Dictionary<string, Dictionary<string, double?>>(exist_graph.graph);
+            IsWeighted = exist_graph.IsWeighted;
+        }
+
         //переопределение метода ToString
         public override string ToString()
         {
@@ -174,31 +231,27 @@ namespace Graph
         {
             List<string> isolatedVertexes = new List<string>();
 
-            List<string> list = this.GetListVertex();
-
             foreach (KeyValuePair<string, Dictionary<string, double?>> item_vertex in graph)
             {
                 if (item_vertex.Value.Count == 1)
                 {
-                    Dictionary<string, double?> item = item_vertex.Value;
-                    if (item.TryGetValue("null", out double? key))
+                    if (item_vertex.Value.TryGetValue("null", out double? key))
                     {
-                            bool noEdges = true;
-                            foreach (KeyValuePair<string, Dictionary<string, double?>> sub_item_vertex in graph)
-                            {                                
-                                foreach (KeyValuePair<string, double?> sub_item_edge in sub_item_vertex.Value)
-                                {
-                                    if (sub_item_edge.Key == item_vertex.Key)
-                                    {
-                                    noEdges = false;
-                                    }
-                                }                    
-                            }
-                            if (noEdges)
+                        bool noEdges = true;
+                        foreach (KeyValuePair<string, Dictionary<string, double?>> sub_item_vertex in graph)
+                        {                                
+                            foreach (KeyValuePair<string, double?> sub_item_edge in sub_item_vertex.Value)
                             {
-                                isolatedVertexes.Add(item_vertex.Key);
-                            }
-                                                
+                                if (sub_item_edge.Key == item_vertex.Key)
+                                {
+                                    noEdges = false;
+                                }
+                            }                    
+                        }
+                        if (noEdges)
+                        {
+                            isolatedVertexes.Add(item_vertex.Key);
+                        }                                                
                     }
                 }
             }
@@ -313,11 +366,6 @@ namespace Graph
         }
 
         //16. Найти сильно связные компоненты орграфа.
-        public int II1()
-        {
-            return -1;
-        }
-
         public List<string> GetListVertex()
         {
             return new List<string>(graph.Keys);
@@ -385,35 +433,63 @@ namespace Graph
             }
         }
 
-        public Dictionary<string, List<string>> stronglyConnectedWithDFS()
+        public void dfs(KeyValuePair<string, Dictionary<string, double?>> v, ref Dictionary<string, bool> used, ref List<string> comp)
         {
-            Dictionary<string, List<string>> dfs_mas = new Dictionary<string, List<string>>();
-
-            foreach (KeyValuePair<string, Dictionary<string, double?>> item_vertex in graph)
-            {
-                dfs_mas.Add(item_vertex.Key, this.DFS(item_vertex.Key));
-            }
-
-            Dictionary<string, List<string>> stronglyConnected = new Dictionary<string, List<string>>();
-
-            foreach (KeyValuePair<string, List<string>> i in dfs_mas)
-            {
-                List<string> tmp = new List<string>();
-                foreach (var j in i.Value)
-                {                    
-                    if (i.Key != j)
+            //used[v] = true;
+            //used.Add(v.Key, true);
+            used[v.Key] = true;
+            comp.Add(v.Key);
+            foreach (KeyValuePair<string, double?> item in v.Value){
+                //int to = g[v][i];
+                //Console.WriteLine("item.Key - " + item.Key);
+                string num = item.Key;
+                //item_vertex.Value.TryGetValue("null", out double? key)
+                KeyValuePair<string, Dictionary<string, double?>> to = new KeyValuePair<string, Dictionary<string, double?>>();
+                foreach (var i in graph)
+                {
+                    if (i.Key == item.Key)
                     {
-                        //Console.WriteLine(i.Key + " - " + j);
-                        //KeyValuePair<string, string> connecetedVertexes = new KeyValuePair<string, string>();
-                        //connecetedVertexes.Key = i.Key;
-
-                        tmp.Add(j);                        
+                        to = i;
                     }
                 }
-                stronglyConnected.Add(i.Key, tmp);
+                if (!used[to.Key] && to.Key != "null") {
+                    dfs(to, ref used, ref comp);
+                }
+            }
+        }
+
+        public void stronglyConnectedWithDFS()
+        {
+            List<List<int>> g = new List<List<int>>();
+            //пройденные веришины
+            //List<bool> used = new List<bool>();
+            Dictionary<string, bool> used = new Dictionary<string, bool>();
+            //компоненты сильной связности
+            List<string> comp = new List<string>();
+
+            used.Clear();
+            foreach (KeyValuePair<string, Dictionary<string, double?>> i in graph)
+            {
+                used.Add(i.Key, false);
             }
 
-            return stronglyConnected;
+            //for (int i = 0; i < graph.Values.Count; ++i)
+            foreach (KeyValuePair<string, Dictionary<string, double?>> i in graph)
+            {
+                //Console.WriteLine(!used[i.Key]);
+                //Console.WriteLine(i.Key);
+                if (!used[i.Key] && i.Key != "null")
+                {
+                    comp.Clear();
+                    dfs(i, ref used, ref comp);
+
+                    foreach (var item in comp)
+                    {
+                        Console.Write(item + " ");
+                    }
+                    Console.WriteLine();
+                }
+            }
 
         }
 
@@ -468,5 +544,204 @@ namespace Graph
             
             return distance;
         }
+
+        #region AddVertex(string vertex)
+        //Добавление вершины
+        public void AddVertex(string vertex)
+        {
+            //Создаем пустой список дуг
+            Dictionary<string, double?> edges = new Dictionary<string, double?>();
+            //Добавляем вершину
+            graph.Add(vertex, edges);
+        }
+        #endregion
+
+        #region AddEdge(string vertex, string end_vertex, double? weight = null)
+        //Добавление ребра
+        public void AddEdge(string vertex, string end_vertex, double? weight = null)
+        {
+            if (
+                graph.ContainsKey(vertex) &&
+                graph.ContainsKey(end_vertex)
+                )
+            {
+                if (this.IsWeighted)
+                {
+                    if (weight == null)
+                    {
+                        throw new Exception("Неверно указан вес ребра");
+                    }
+
+                    graph[vertex].Add(end_vertex, weight);
+                }
+                else
+                {
+                    graph[vertex].Add(end_vertex, null);
+                }
+            }
+            else
+            {
+                throw new Exception("Указанная вершина отсутсвует в графе");
+            }
+        }
+        #endregion
+
+        #region AddOrientedEdge(string vertex, string end_vertex, double? weight = null)
+        //Добавление ориентированного ребра
+        public void AddOrientedEdge(string vertex, string end_vertex, double? weight = null)
+        {
+            if (
+                graph.ContainsKey(vertex) &&
+                graph.ContainsKey(end_vertex)
+                )
+            {
+                if (this.IsWeighted)
+                {
+                    if (weight == null)
+                    {
+                        throw new Exception("Неверно указан вес ребра");
+                    }
+                    graph[vertex].Add(end_vertex, weight);
+                    graph[end_vertex].Add(vertex, weight);
+                }
+                else
+                {
+                    graph[vertex].Add(end_vertex, null);
+                    graph[end_vertex].Add(vertex, null);
+                }
+            }
+            else
+            {
+                throw new Exception("Указанная вершина отсутсвует в графе");
+            }
+        }
+        #endregion
+
+        #region RemoveOrientedEdge(string vertex, string end_vertex)
+        public void RemoveOrientedEdge(string vertex, string end_vertex)
+        {
+            try
+            {
+                if (!graph[vertex].Remove(end_vertex) || !graph[end_vertex].Remove(vertex))
+                {
+                    throw new Exception("Ребро не существует.");
+                }
+            }
+            catch
+            {
+                throw new Exception("Ребро не существует.");
+            }
+        }
+        #endregion
+
+        //Алгоритм Прима
+        #region Prim()
+        public Graph Prim()
+        {
+            Graph graph = new Graph(this);
+
+            List<string> all_vertex = graph.GetListVertex();
+            Random rnd = new Random();
+
+            string random_vertex = all_vertex[rnd.Next(all_vertex.Count)];
+            Graph minimum_weight_frame = new Graph();
+            minimum_weight_frame.AddVertex(random_vertex);
+            all_vertex.Remove(random_vertex);
+
+            while (all_vertex.Count > 0)
+            {
+                List<Edge> adjacent = new List<Edge>();
+                List<string> proccessed_vertex = minimum_weight_frame.GetListVertex();
+
+                foreach (string vertex in proccessed_vertex)
+                {
+                    foreach (KeyValuePair<string, double?> edge in graph.GetListWeightedEdges(vertex))
+                    {
+                        adjacent.Add(new Edge(vertex, edge.Key, edge.Value));
+                    }
+                }
+
+                //Находим минимальные ребра
+                var min_weight = adjacent.Min(elem => elem.Weight);
+                var all_min_elem =
+                    adjacent.Where(elem => elem.Weight == min_weight).ToList();
+
+                int random_index = rnd.Next(all_min_elem.Count);
+                graph.RemoveOrientedEdge(
+                    all_min_elem[random_index].VertexFrom,
+                    all_min_elem[random_index].VertexTo
+                    );
+
+                minimum_weight_frame.AddVertex(all_min_elem[random_index].VertexTo);
+                all_vertex.Remove(all_min_elem[random_index].VertexTo);
+
+                minimum_weight_frame.AddOrientedEdge(
+                    all_min_elem[random_index].VertexFrom,
+                    all_min_elem[random_index].VertexTo,
+                    all_min_elem[random_index].Weight
+                    );
+            }
+            return minimum_weight_frame;
+        }
+        #endregion
+
+        #region GetAllEdges()
+        public List<Edge> GetAllEdges()
+        {
+            List<Edge> edges = new List<Edge>();
+
+            foreach (var vertex_from in graph)
+            {
+                foreach (var vertex_to in vertex_from.Value)
+                {
+                    edges.Add(new Edge(vertex_from.Key, vertex_to.Key, vertex_to.Value));
+                }
+            }
+
+            return edges;
+        }
+        #endregion
+
+        //алгоритм Белмана-Форда
+        #region BellmanFord(string cur_vertex)
+        public Dictionary<string, double?> BellmanFord(string cur_vertex)
+        {
+            Dictionary<string, double?> distance = new Dictionary<string, double?>();
+
+            foreach (string vertex in GetListVertex())
+            {
+                if (vertex == cur_vertex)
+                {
+                    distance.Add(vertex, 0);
+                }
+                else
+                {
+                    distance.Add(vertex, double.MaxValue);
+                }
+            }
+
+            for (int i = 0; i < GetListVertex().Count - 1; i++)
+            {
+                foreach (Edge edge in GetAllEdges())
+                {
+                    if (distance[edge.VertexFrom] > distance[edge.VertexTo] + edge.Weight)
+                    {
+                        distance[edge.VertexFrom] = distance[edge.VertexTo] + edge.Weight;
+                    }
+                }
+
+                /*Console.WriteLine("itreation");
+                foreach (var item in distance)
+                {
+                    Console.WriteLine(item);
+                }*/
+
+            }
+
+
+
+            return distance;
+        }
+        #endregion
     }
 }
