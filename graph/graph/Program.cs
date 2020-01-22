@@ -130,9 +130,28 @@ namespace Graph
             }
             double? radius = max_distance.Min();
             Console.WriteLine("Радиус: " + radius);
+            Console.WriteLine();
             #endregion
 
-        }
+            #region IVc
+            Console.WriteLine("Определить, есть ли в графе вершина, каждая из минимальных стоимостей пути от которой до остальных не превосходит N.");
+            Console.Write("N = ");
+            int n = int.Parse(Console.ReadLine());
 
+            foreach (var vertex in g.GetListVertex())
+            {
+                Dictionary<string, double?> dist = g.BellmanFord(vertex);
+
+                var max_dist = dist.Values.Max();
+
+                if (max_dist <= n)
+                {
+                    Console.Write(vertex + " ");
+                }
+            }
+            //Console.WriteLine();
+            Console.WriteLine();
+            #endregion
+        }
     }
 }
